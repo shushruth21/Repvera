@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1F81669C3051D0060033DE73 /* WorkoutPartnerCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1F81669B3051D0060033DE73 /* WorkoutPartnerCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		1F81667E3051CF200033DE73 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,7 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1F81666E3051CF1D0033DE73 /* Workout Partner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Workout Partner.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F81666E3051CF1D0033DE73 /* Repvera.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Repvera.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F81667D3051CF200033DE73 /* Workout PartnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Workout PartnerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F8166873051CF210033DE73 /* Workout PartnerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Workout PartnerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F81669C3051D0060033DE73 /* WorkoutPartnerCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,7 +90,7 @@
 		1F81666F3051CF1D0033DE73 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1F81666E3051CF1D0033DE73 /* Workout Partner.app */,
+				1F81666E3051CF1D0033DE73 /* Repvera.app */,
 				1F81667D3051CF200033DE73 /* Workout PartnerTests.xctest */,
 				1F8166873051CF210033DE73 /* Workout PartnerUITests.xctest */,
 			);
@@ -95,9 +100,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1F81666D3051CF1D0033DE73 /* Workout Partner */ = {
+		1F81666D3051CF1D0033DE73 /* Repvera */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1F8166913051CF210033DE73 /* Build configuration list for PBXNativeTarget "Workout Partner" */;
+			buildConfigurationList = 1F8166913051CF210033DE73 /* Build configuration list for PBXNativeTarget "Repvera" */;
 			buildPhases = (
 				1F81666A3051CF1D0033DE73 /* Sources */,
 				1F81666B3051CF1D0033DE73 /* Frameworks */,
@@ -110,11 +115,12 @@
 			fileSystemSynchronizedGroups = (
 				1F8166703051CF1D0033DE73 /* Workout Partner */,
 			);
-			name = "Workout Partner";
+			name = Repvera;
 			packageProductDependencies = (
+				1F81669B3051D0060033DE73 /* WorkoutPartnerCore */,
 			);
 			productName = "Workout Partner";
-			productReference = 1F81666E3051CF1D0033DE73 /* Workout Partner.app */;
+			productReference = 1F81666E3051CF1D0033DE73 /* Repvera.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1F81667C3051CF200033DE73 /* Workout PartnerTests */ = {
@@ -195,12 +201,15 @@
 			);
 			mainGroup = 1F8166653051CF1D0033DE73;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1F81669A3051D0060033DE73 /* XCLocalSwiftPackageReference "WorkoutPartnerCore" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1F81666F3051CF1D0033DE73 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1F81666D3051CF1D0033DE73 /* Workout Partner */,
+				1F81666D3051CF1D0033DE73 /* Repvera */,
 				1F81667C3051CF200033DE73 /* Workout PartnerTests */,
 				1F8166863051CF210033DE73 /* Workout PartnerUITests */,
 			);
@@ -258,12 +267,12 @@
 /* Begin PBXTargetDependency section */
 		1F81667F3051CF200033DE73 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1F81666D3051CF1D0033DE73 /* Workout Partner */;
+			target = 1F81666D3051CF1D0033DE73 /* Repvera */;
 			targetProxy = 1F81667E3051CF200033DE73 /* PBXContainerItemProxy */;
 		};
 		1F8166893051CF210033DE73 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1F81666D3051CF1D0033DE73 /* Workout Partner */;
+			target = 1F81666D3051CF1D0033DE73 /* Repvera */;
 			targetProxy = 1F8166883051CF210033DE73 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -394,6 +403,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Repvera;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -409,7 +419,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.shushruthbharadwaj.Workout-Partner";
+				PRODUCT_BUNDLE_IDENTIFIER = com.shushruthbharadwaj.repvera;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -436,6 +446,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Repvera;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -451,7 +462,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.shushruthbharadwaj.Workout-Partner";
+				PRODUCT_BUNDLE_IDENTIFIER = com.shushruthbharadwaj.repvera;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -577,7 +588,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1F8166913051CF210033DE73 /* Build configuration list for PBXNativeTarget "Workout Partner" */ = {
+		1F8166913051CF210033DE73 /* Build configuration list for PBXNativeTarget "Repvera" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1F8166923051CF210033DE73 /* Debug */,
@@ -605,6 +616,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1F81669A3051D0060033DE73 /* XCLocalSwiftPackageReference "WorkoutPartnerCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = WorkoutPartnerCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1F81669B3051D0060033DE73 /* WorkoutPartnerCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WorkoutPartnerCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1F8166663051CF1D0033DE73 /* Project object */;
 }

@@ -1,0 +1,13 @@
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+*.moved-aside
+*.hmap
+
+# Swift
+.build/
+.swiftpm/
+
+# macOS
+.DS_Store
