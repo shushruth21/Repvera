@@ -51,3 +51,38 @@ adaptation creates a decision record and plan version.
 **Reason:** Coaching must be explainable and reversible.
 
 **Consequence:** The data model needs versioning rather than in-place updates.
+
+## ADR-006 — V1 policy source of truth
+
+**Decision:** When product docs disagree, v1 follows this freeze so the engine
+and UI do not fork.
+
+- The four-tab shell, including Today, is Milestone 0. Real Today data arrives
+  with onboarding, logging, and ATI integration. HealthKit remains Milestone 4.
+- The Profile tab is the settings home. Onboarding lives under
+  `Features/Onboarding`; profile and later data controls live under
+  `Features/Profile`.
+- `TrainingProfile` is the ATI input value type. SwiftData persists
+  `UserProfile` and maps into `TrainingProfile`.
+- Do not persist `PlanWeek`. Derive weeks from `PlannedWorkout` dates.
+- Missed-target v1 policy is hold load only. Reducing a hard set after fatigue
+  is a later named policy.
+- Low-readiness v1 policy is a single-session volume reduction. A rest or
+  mobility option may be offered in the UI later; it is not a diagnosis.
+- Bodyweight v1 policy keeps the prescription. Adding a rep when load cannot
+  increase is a later named policy.
+- Log RPE in v1. Optional RIR may be stored later; it is not an ATI input.
+- Domain and ATI rules live in `WorkoutPartnerCore`, not in app `Domain/` or
+  `TrainingEngine/` folders.
+- Personal build target is iPhone, iOS 26. The core package may declare a
+  lower platform as long as it compiles in the app SDK.
+- SwiftData is local-only, with CloudKit disabled. The engine stays
+  side-effect free; use cases persist after `decide`.
+- Milestone 4 may show a weekly summary. Automatic weekly plan rewrites wait
+  for ATI v2.
+
+**Reason:** The knowledge base was internally consistent on the product thesis
+but split on sequencing, naming, and a few progression details.
+
+**Consequence:** New features implement this freeze, not the conflicting
+sentences they replace.

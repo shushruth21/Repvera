@@ -1,26 +1,42 @@
 import SwiftUI
+import SwiftData
 import WorkoutPartnerCore
 
 struct PlanScreen: View {
+    @Environment(TrainingStore.self) private var store
+
+    private var todayWeekday: Int {
+        Calendar.current.component(.weekday, from: .now)
+    }
+
     var body: some View {
         NavigationStack {
             List {
-                Section("CURRENT PLAN") {
-                    ForEach(SampleTraining.week) { session in
-                        PlanRow(session: session)
+                if let plan = store.plan, store.hasCompletedOnboarding {
+                    Section("CURRENT PLAN · V\(plan.version)") {
+                        ForEach(plan.workouts) { workout in
+                            PlanRow(workout: workout, isToday: workout.weekday == todayWeekday)
+                        }
                     }
-                }
 
-                Section("DECISION HISTORY") {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Barbell bench press")
-                            .font(.headline)
-                        Text(SampleTraining.decision.coachExplanation)
-                            .font(.subheadline)
+                    Section("DECISION HISTORY") {
+                        let history = store.decisionHistory()
+                        if history.isEmpty {
+                            Text("No adaptations yet. Log workouts and Repvera will record why the next session changes.")
+                                .foregroundStyle(.secondary)
+                        } else {
+                            ForEach(history.prefix(10)) { decision in
+                                DecisionHistoryRow(decision: decision)
+                                    .listRowSeparator(.hidden)
+                                    .listRowBackground(Color.clear)
+                            }
+                        }
+                    }
+                } else {
+                    Section {
+                        Text("Confirm a starter plan in setup to see this week’s sessions.")
                             .foregroundStyle(.secondary)
                     }
-                    .padding(.vertical, 4)
-                    .accessibilityElement(children: .combine)
                 }
 
                 Section("ADAPTIVE RULES") {
@@ -35,40 +51,34 @@ struct PlanScreen: View {
 }
 
 private struct PlanRow: View {
-    let session: SampleSession
+    let workout: PlannedWorkoutDraft
+    let isToday: Bool
 
     var body: some View {
         HStack {
-            Text(session.dayLabel)
+            Text(workout.dayLabel)
                 .font(.caption.weight(.bold))
                 .foregroundStyle(.secondary)
                 .frame(width: 34, alignment: .leading)
             VStack(alignment: .leading, spacing: 2) {
-                Text(session.title)
-                if session.status == .today, let changeSummary = session.changeSummary {
-                    Text(changeSummary)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                Text(workout.title)
+                Text(workout.detailLine)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
             Spacer()
-            Text(session.status.rawValue)
+            Text(isToday ? "Today" : "Planned")
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(statusColor)
+                .foregroundStyle(isToday ? Color.repveraAccent : .secondary)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(session.dayLabel) \(session.title), \(session.status.rawValue)")
-    }
-
-    private var statusColor: Color {
-        switch session.status {
-        case .complete: .green
-        case .today: .repveraAccent
-        case .planned: .secondary
-        }
+        .accessibilityLabel("\(workout.dayLabel) \(workout.title), \(isToday ? "Today" : "Planned")")
     }
 }
 
 #Preview {
-    PlanScreen()
+    let container = try! RepveraSchema.makeContainer(inMemory: true)
+    return PlanScreen()
+        .environment(TrainingStore(context: container.mainContext))
+        .modelContainer(container)
 }

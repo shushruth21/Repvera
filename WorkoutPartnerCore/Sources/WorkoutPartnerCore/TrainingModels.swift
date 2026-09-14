@@ -1,19 +1,40 @@
 import Foundation
 
-public enum TrainingGoal: String, Sendable, Codable {
+public enum TrainingGoal: String, Sendable, Codable, CaseIterable, Identifiable {
     case buildMuscle
     case loseFat
     case buildStrength
     case generalFitness
+
+    public var id: String { rawValue }
+
+    public var label: String {
+        switch self {
+        case .buildMuscle: "Build muscle"
+        case .loseFat: "Lose fat"
+        case .buildStrength: "Build strength"
+        case .generalFitness: "General fitness"
+        }
+    }
 }
 
-public enum TrainingExperience: String, Sendable, Codable {
+public enum TrainingExperience: String, Sendable, Codable, CaseIterable, Identifiable {
     case beginner
     case intermediate
     case advanced
+
+    public var id: String { rawValue }
+
+    public var label: String {
+        switch self {
+        case .beginner: "Beginner"
+        case .intermediate: "Intermediate"
+        case .advanced: "Advanced"
+        }
+    }
 }
 
-public enum MovementPattern: String, Sendable, Codable {
+public enum MovementPattern: String, Sendable, Codable, CaseIterable, Identifiable {
     case squat
     case hinge
     case horizontalPush
@@ -23,6 +44,22 @@ public enum MovementPattern: String, Sendable, Codable {
     case singleLeg
     case carry
     case isolation
+
+    public var id: String { rawValue }
+
+    public var label: String {
+        switch self {
+        case .squat: "Squat"
+        case .hinge: "Hinge"
+        case .horizontalPush: "Horizontal push"
+        case .horizontalPull: "Horizontal pull"
+        case .verticalPush: "Vertical push"
+        case .verticalPull: "Vertical pull"
+        case .singleLeg: "Single-leg"
+        case .carry: "Carry"
+        case .isolation: "Accessory"
+        }
+    }
 }
 
 public struct TrainingProfile: Sendable, Codable, Equatable {
@@ -49,6 +86,7 @@ public struct ExercisePrescription: Sendable, Codable, Equatable, Identifiable {
     public let targetReps: Int
     public let loadKilograms: Double?
     public let targetRPE: Double
+    public let restSeconds: Int?
 
     public init(
         id: UUID = UUID(),
@@ -57,7 +95,8 @@ public struct ExercisePrescription: Sendable, Codable, Equatable, Identifiable {
         sets: Int,
         targetReps: Int,
         loadKilograms: Double?,
-        targetRPE: Double
+        targetRPE: Double,
+        restSeconds: Int? = nil
     ) {
         self.id = id
         self.exerciseID = exerciseID
@@ -66,6 +105,7 @@ public struct ExercisePrescription: Sendable, Codable, Equatable, Identifiable {
         self.targetReps = targetReps
         self.loadKilograms = loadKilograms
         self.targetRPE = targetRPE
+        self.restSeconds = restSeconds
     }
 }
 
@@ -91,6 +131,23 @@ public struct ExercisePerformance: Sendable, Codable, Equatable {
         completedSets >= prescription.sets
             && lowestCompletedReps >= prescription.targetReps
             && failedReps == 0
+    }
+
+    /// Summarizes one session's logged sets for a single exercise, judged
+    /// against the prescription they were performed under. Returns `nil`
+    /// when there is nothing logged yet for that exercise.
+    public static func summarizing(_ sets: [LoggedSet], against prescription: ExercisePrescription) -> ExercisePerformance? {
+        let completedSets = sets.filter { $0.repsCompleted > 0 }
+        guard !completedSets.isEmpty else { return nil }
+        let lowestReps = completedSets.map(\.repsCompleted).min() ?? 0
+        let highestRPE = sets.compactMap(\.rpe).max() ?? 0
+        let failedReps = completedSets.filter { $0.repsCompleted < prescription.targetReps }.count
+        return ExercisePerformance(
+            completedSets: completedSets.count,
+            lowestCompletedReps: lowestReps,
+            highestRPE: highestRPE,
+            failedReps: failedReps
+        )
     }
 }
 
@@ -129,6 +186,11 @@ public struct ReadinessSnapshot: Sendable, Codable, Equatable {
         let adverseHealthSignals = hrvBelowBaseline == true && restingHeartRateAboveBaseline == true
         return poorCheckIn || poorSleep || adverseHealthSignals
     }
+
+    /// The conservative "nothing reported yet" baseline used wherever a real
+    /// daily check-in hasn't been collected. A single shared constant so the
+    /// same assumption isn't hand-typed at every call site.
+    public static let defaultOptimistic = ReadinessSnapshot(energy: 8, sleepQuality: 8, stress: 3, soreness: 3)
 }
 
 public struct ExerciseContext: Sendable, Codable, Equatable {

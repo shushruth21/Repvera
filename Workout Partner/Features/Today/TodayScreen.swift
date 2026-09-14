@@ -1,96 +1,137 @@
 import SwiftUI
+import SwiftData
 import WorkoutPartnerCore
 
 struct TodayScreen: View {
+    @Environment(TrainingStore.self) private var store
     @State private var showingWorkout = false
-    private let session = SampleTraining.featuredSession
-    private let isTrainingDay = SampleTraining.todaySession != nil
+
+    private var todayWeekday: Int {
+        Calendar.current.component(.weekday, from: .now)
+    }
+
+    private var session: PlannedWorkoutDraft? {
+        store.plan?.workout(onWeekday: todayWeekday) ?? store.plan?.nextWorkout(afterWeekday: todayWeekday)
+    }
+
+    private var isTrainingDay: Bool {
+        store.plan?.workout(onWeekday: todayWeekday) != nil
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(Date.now.formatted(.dateTime.weekday(.wide).month(.wide).day()).uppercased())
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        Text(isTrainingDay ? "Ready to train?" : "Recovery day")
-                            .font(.title.bold())
-                        Text(isTrainingDay
-                             ? "Your plan is adapted from your last bench session and today’s check-in."
-                             : "No session is scheduled today. Review the next workout and keep the plan as written.")
-                            .foregroundStyle(.secondary)
-                    }
-
-                    ReadinessCard()
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(isTrainingDay ? "TODAY'S SESSION" : "NEXT SESSION")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.secondary)
-
-                        HStack(alignment: .top, spacing: 14) {
-                            Image(systemName: "figure.strengthtraining.traditional")
-                                .font(.title2)
-                                .foregroundStyle(.white)
-                                .frame(width: 48, height: 48)
-                                .background(Color.repveraAccent, in: RoundedRectangle(cornerRadius: 14))
-                                .accessibilityHidden(true)
-
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(session.title)
-                                    .font(.headline)
-                                Text(session.detailLine)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                if let changeSummary = session.changeSummary {
-                                    Label(changeSummary, systemImage: "arrow.up.right")
-                                        .font(.caption.weight(.semibold))
-                                        .foregroundStyle(.green)
-                                }
-                            }
-
-                            Spacer()
-                        }
-
-                        Button {
-                            showingWorkout = true
-                        } label: {
-                            Label(isTrainingDay ? "Start workout" : "Preview workout", systemImage: "play.fill")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.repveraAccent)
-                        .controlSize(.large)
-                        .frame(minHeight: 44)
-                    }
-                    .padding(18)
-                    .background(Color.secondary.opacity(0.09), in: RoundedRectangle(cornerRadius: 20))
-
-                    CoachExplanationCard(
-                        decision: SampleTraining.decision,
-                        exerciseName: "Bench press",
-                        previousLoadKilograms: SampleTraining.previousBenchLoadKilograms
-                    )
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("THIS WEEK")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.secondary)
-                        HStack(spacing: 12) {
-                            MetricTile(value: "\(SampleTraining.completedThisWeek) / \(SampleTraining.week.count)", label: "workouts")
-                            MetricTile(value: "Energy 8", label: "check-in")
-                            MetricTile(value: "Sleep 8", label: "self-report")
-                        }
-                    }
+                if let session, store.hasCompletedOnboarding {
+                    populatedToday(session: session)
+                } else {
+                    emptyToday
                 }
-                .padding()
             }
             .navigationTitle("Repvera")
             .sheet(isPresented: $showingWorkout) {
-                WorkoutPlayer(session: session)
+                if let session {
+                    WorkoutPlayer(session: session)
+                }
             }
         }
+    }
+
+    private var emptyToday: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("No plan yet")
+                .font(.title.bold())
+            Text("Confirm a starter plan in setup. Today stays empty until there is a Training Plan v1 to start.")
+                .foregroundStyle(.secondary)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func populatedToday(session: PlannedWorkoutDraft) -> some View {
+        VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(Date.now.formatted(.dateTime.weekday(.wide).month(.wide).day()).uppercased())
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                Text(isTrainingDay ? "Ready to train?" : "No session today")
+                    .font(.title.bold())
+                Text(isTrainingDay
+                     ? "This is your confirmed starter plan. Log work so later changes have evidence."
+                     : "Review the next workout. The plan stays as written until you log a session.")
+                    .foregroundStyle(.secondary)
+            }
+
+            ReadinessCard()
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text(isTrainingDay ? "TODAY'S SESSION" : "NEXT SESSION")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+
+                HStack(alignment: .top, spacing: 14) {
+                    Image(systemName: "figure.strengthtraining.traditional")
+                        .font(.title2)
+                        .foregroundStyle(.white)
+                        .frame(width: 48, height: 48)
+                        .background(Color.repveraAccent, in: RoundedRectangle(cornerRadius: 14))
+                        .accessibilityHidden(true)
+
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(session.title)
+                            .font(.headline)
+                        Text(session.detailLine)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                }
+
+                Button {
+                    showingWorkout = true
+                } label: {
+                    Label(isTrainingDay ? "Start workout" : "Preview workout", systemImage: "play.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.repveraAccent)
+                .controlSize(.large)
+                .frame(minHeight: 44)
+            }
+            .padding(18)
+            .background(Color.secondary.opacity(0.09), in: RoundedRectangle(cornerRadius: 20))
+
+            if let decision = baselineDecision(for: session) {
+                CoachExplanationCard(
+                    decision: decision,
+                    exerciseName: ExerciseCatalogue.name(id: session.prescriptions.first?.exerciseID ?? ""),
+                    previousLoadKilograms: session.prescriptions.first?.loadKilograms
+                )
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text("THIS WEEK")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+                HStack(spacing: 12) {
+                    MetricTile(value: "\(store.completedSessionsThisWeek()) / \(store.plan?.workouts.count ?? 0)", label: "workouts")
+                    MetricTile(value: "Plan v\(store.plan?.version ?? 1)", label: "active")
+                    MetricTile(value: "Self-report", label: "readiness")
+                }
+            }
+        }
+        .padding()
+    }
+
+    private func baselineDecision(for session: PlannedWorkoutDraft) -> TrainingDecision? {
+        guard let prescription = session.prescriptions.first, let profile = store.profile else { return nil }
+        return AdaptiveTrainingEngine().decide(
+            profile: profile.trainingProfile,
+            context: ExerciseContext(
+                prescription: prescription,
+                recentPerformances: store.recentPerformances(exerciseID: prescription.exerciseID, prescription: prescription),
+                readiness: .defaultOptimistic
+            )
+        )
     }
 }
 
@@ -105,9 +146,9 @@ private struct ReadinessCard: View {
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 6) {
-                Text("Good recovery")
+                Text("Starter readiness")
                     .font(.headline)
-                Text("Sleep, energy, and soreness support training as planned today.")
+                Text("No check-in is stored yet. The plan stays conservative until you log sessions.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Label("Coaching signal, not a medical score", systemImage: "info.circle")
@@ -123,5 +164,8 @@ private struct ReadinessCard: View {
 }
 
 #Preview {
-    TodayScreen()
+    let container = try! RepveraSchema.makeContainer(inMemory: true)
+    return TodayScreen()
+        .environment(TrainingStore(context: container.mainContext))
+        .modelContainer(container)
 }

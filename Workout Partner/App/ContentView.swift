@@ -1,6 +1,9 @@
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
+    @Environment(TrainingStore.self) private var store
+
     var body: some View {
         TabView {
             TodayScreen()
@@ -16,9 +19,20 @@ struct ContentView: View {
                 .tabItem { Label("Profile", systemImage: "person.crop.circle") }
         }
         .tint(.repveraAccent)
+        .fullScreenCover(isPresented: Binding(
+            get: { !store.hasCompletedOnboarding },
+            set: { _ in }
+        )) {
+            OnboardingView()
+                .environment(store)
+                .interactiveDismissDisabled()
+        }
     }
 }
 
 #Preview {
-    ContentView()
+    let container = try! RepveraSchema.makeContainer(inMemory: true)
+    return ContentView()
+        .environment(TrainingStore(context: container.mainContext))
+        .modelContainer(container)
 }

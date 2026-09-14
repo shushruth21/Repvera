@@ -136,7 +136,8 @@ public struct AdaptiveTrainingEngine: Sendable {
             sets: sets ?? prescription.sets,
             targetReps: prescription.targetReps,
             loadKilograms: loadKilograms ?? prescription.loadKilograms,
-            targetRPE: prescription.targetRPE
+            targetRPE: prescription.targetRPE,
+            restSeconds: prescription.restSeconds
         )
     }
 }
